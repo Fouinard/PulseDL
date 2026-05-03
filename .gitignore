@@ -1,0 +1,41 @@
+﻿# Build folders
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / VSCode
+.idea/
+.vscode/
+
+# NuGet
+*.nupkg
+project.assets.json
+project.nuget.cache
+
+# MSIX / Packaging
+AppPackages/
+*.msix
+*.appinstaller
+
+# Certificates (CRITICAL)
+*.pfx
+*.p12
+
+# Logs
+*.log
+
+# Temp files
+*.tmp
+
+# Publish output
+publish/
+
+# OS
+.DS_Store
+Thumbs.db

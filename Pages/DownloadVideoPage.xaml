@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="PulseDL.Pages.DownloadVideoPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:PulseDL.Pages"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      NavigationCacheMode="Enabled"
+      mc:Ignorable="d">
+    <StackPanel Orientation="Vertical"
+                Spacing="10"
+                Padding="50"
+                HorizontalAlignment="Left">
+        <TextBlock Margin="0,0,0,30"
+                   Style="{StaticResource TitleTextBlockStyle}">
+            Télécharger
+        </TextBlock>
+        <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+            Entrez l'URL de la vidéo YouTube à télécharger
+        </TextBlock>
+        <TextBox Width="500"
+                 x:Name="UrlInput"
+                 HorizontalAlignment="Left"
+                 TextChanged="UrlInput_TextChanged"/>
+        <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,30">
+            <Button x:Name="SearchButton"
+                    IsEnabled="False"
+                    Click="SearchButton_Click">
+                Rechercher
+            </Button>
+            <ProgressRing x:Name="SearchProgressRing" IsActive="False" Width="20" Height="20" VerticalAlignment="Center" />
+        </StackPanel>
+        <ScrollView Height="750"
+                    IsTabStop="True"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    Visibility="Collapsed"
+                    x:Name="VideoDetailsScrollView">
+            <StackPanel Orientation="Vertical" Spacing="10" HorizontalAlignment="Left">
+                <TextBlock x:Name="VideoTitle" Style="{StaticResource BodyLargeStrongTextBlockStyle}"/>
+                <Image Width="400" HorizontalAlignment="Left">
+                    <Image.Source>
+                        <BitmapImage UriSource="" x:Name="VideoThumbnail"/>
+                    </Image.Source>
+                </Image>
+                <ComboBox Header="Qualité vidéo"
+                          SelectionChanged="VideoDropdownVideoChoice_SelectionChanged"
+                          PlaceholderText="Sélectionnez la qualité vidéo"
+                          x:Name="VideoDropdownVideoChoice"
+                          DisplayMemberPath="Display"></ComboBox>
+                <ComboBox Header="Qualité audio"
+                          SelectionChanged="AudioDropdownAudioChoice_SelectionChanged"
+                          PlaceholderText="Sélectionnez la qualité audio"
+                          x:Name="AudioDropdownAudioChoice" 
+                          DisplayMemberPath="Display"></ComboBox>
+                <Button Content="Télécharger"
+                        IsEnabled="False"
+                        x:Name="DownloadButton"
+                        Click="DownloadButton_Click"
+                        Margin="0,30,0,0"/>
+            </StackPanel>
+        </ScrollView>
+    </StackPanel>
+</Page>

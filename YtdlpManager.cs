@@ -1,0 +1,156 @@
+﻿using ABI.System;
+using PulseDL.Util;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Globalization;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+namespace PulseDL
+{
+    internal class YtdlpManager
+    {
+        public static string ytdlpPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "PulseDL",
+            "yt-dlp.exe"
+        );
+
+        public static async Task<YoutubeVideoData> getVideoData(string url)
+        {
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = ytdlpPath,
+                Arguments = $"--js-runtimes node --no-playlist --cookies-from-browser edge -J --skip-download \"{url}\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            var process = Process.Start(psi)!;
+            string output = (await process.StandardOutput.ReadToEndAsync()).Trim();
+            string error = await process.StandardError.ReadToEndAsync();
+            process.WaitForExit();
+            Debug.WriteLine(error);
+            YoutubeVideoData video = JsonSerializer.Deserialize<YoutubeVideoData>(output)!;
+            List<YoutubeFormat> filteredFormats = [];
+            foreach(var format in video.formats)
+            {
+                if(!format.format_id.Contains("drc")) {
+                    filteredFormats.Add(format);
+                }
+            }
+            video.formats = filteredFormats;
+            return video;
+        }
+
+        public static async Task downloadYoutubeVideo(
+            YoutubeVideoData videoData,
+            string format,
+            Action<float> progressCallback,
+            Action<string, string> milestoneCallback
+        )
+        {
+            Settings settings = SettingsManager.Load();
+            string path = Path.Combine(settings.DownloadPath, $"{Sanitizer.SanitizeFileName(videoData.title)} ({videoData.id}).%(ext)s");
+            var psi = new ProcessStartInfo
+            {
+                FileName = ytdlpPath,
+                Arguments = $"--js-runtimes node -f \"{format}\" --newline -o \"{path}\" \"https://youtu.be/{videoData.id}\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            var process = new Process { StartInfo = psi };
+            process.OutputDataReceived += (s, e) =>
+            {
+                if (string.IsNullOrEmpty(e.Data)) return;
+                if(e.Data.Contains("ETA"))
+                {
+                    string data = Regex.Replace(e.Data.Trim(), @"\s+", " ").Trim();
+                    float.TryParse(
+                        data.Split(" ")[1].Replace("%", "").Trim(),
+                        NumberStyles.Float,
+                        CultureInfo.InvariantCulture,
+                        out float percent
+                    );
+                    progressCallback(percent);
+                }
+                if(e.Data.Contains("Destination:"))
+                {
+                    if(!format.Contains("+"))
+                    {
+                        string finalFilepath = string.Join("Destination:", e.Data.Trim().Split("Destination:").Skip(1)).Trim();
+                        milestoneCallback("dl_final", finalFilepath);
+                    } else
+                    {
+                        string partFilepath = string.Join("Destination:", e.Data.Trim().Split("Destination:").Skip(1)).Trim();
+                        milestoneCallback("dl_part", partFilepath);
+                    }
+                }
+                if(format.Contains("+") && e.Data.Contains("[Merger]"))
+                {
+                    string finalFilepath = string.Join("into", e.Data.Trim().Split("into").Skip(1)).Trim();
+                    finalFilepath = finalFilepath.Substring(1, finalFilepath.Length - 2);
+                    milestoneCallback("merging", finalFilepath);
+                }
+            };
+            process.ErrorDataReceived += (s, e) =>
+            {
+                if (string.IsNullOrEmpty(e.Data)) return;
+                Debug.WriteLine(e.Data);
+            };
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            await process.WaitForExitAsync();
+            return;
+        }
+        public static async Task<bool> isYtdlpInstalled()
+        {
+            string folder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "PulseDL"
+            );
+            string exePath = Path.Combine(folder, "yt-dlp.exe");
+            return File.Exists(exePath);
+        }
+        public static async Task<string> DownloadYtdlp()
+        {
+            string folder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "PulseDL"
+            );
+            Directory.CreateDirectory(folder);
+            string exePath = Path.Combine(folder, "yt-dlp.exe");
+            using HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Add("User-Agent", "PulseDL");
+            string json = await client.GetStringAsync("https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest");
+            using JsonDocument doc = JsonDocument.Parse(json);
+            var assets = doc.RootElement.GetProperty("assets");
+            string downloadUrl = "";
+            foreach(var asset in assets.EnumerateArray())
+            {
+                string name = asset.GetProperty("name").GetString();
+                if(name == "yt-dlp.exe")
+                {
+                    downloadUrl = asset.GetProperty("browser_download_url").GetString();
+                    break;
+                }
+            }
+            if(string.IsNullOrEmpty(downloadUrl)) throw new System.Exception("Could not find yt-dlp.exe in the latest release assets.");
+            byte[] data = await client.GetByteArrayAsync(downloadUrl);
+            await File.WriteAllBytesAsync(exePath, data);
+            return exePath;
+        }
+    }
+}

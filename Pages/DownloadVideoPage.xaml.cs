@@ -1,0 +1,271 @@
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Navigation;
+using PulseDL.Util;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text.RegularExpressions;
+using Windows.Devices.PointOfService;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+
+// To learn more about WinUI, the WinUI project structure,
+// and more about our project templates, see: http://aka.ms/winui-project-info.
+
+namespace PulseDL.Pages
+{
+    /// <summary>
+    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// </summary>
+    public sealed partial class DownloadVideoPage : Page
+    {
+        public DownloadVideoPage()
+        {
+            InitializeComponent();
+        }
+
+        private YoutubeVideoData currentVideoData;
+
+        private void UrlInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if(string.IsNullOrEmpty(UrlInput.Text.Trim()))
+            {
+                SearchButton.IsEnabled = false;
+            } else
+            {
+                SearchButton.IsEnabled = true;
+            }
+        }
+
+        private async void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            string url = UrlInput.Text;
+            SearchButton.IsEnabled = false;
+            SearchProgressRing.IsActive = true;
+            YoutubeVideoData video = await YtdlpManager.getVideoData(url);
+            SearchButton.IsEnabled = true;
+            SearchProgressRing.IsActive = false;
+            VideoTitle.Text = video.title;
+            VideoThumbnail.UriSource = new Uri(video.thumbnail);
+            List<AudioFormatItem> audioFormats = new();
+            List<VideoFormatItem> videoFormats = new();
+            audioFormats.Add(
+                new AudioFormatItem
+                {
+                    format = new YoutubeFormat
+                    {
+                        format_id = "empty"
+                    },
+                    IsEmpty = true
+                }
+            );
+            videoFormats.Add(
+                new VideoFormatItem
+                {
+                    format = new YoutubeFormat
+                    {
+                        format_id = "empty"
+                    },
+                    IsEmpty = true
+                }
+            );
+            currentVideoData = video;
+            foreach (YoutubeFormat format in video.formats)
+            {
+                if (format.ext == "mhtml") continue;
+                if (format.protocol == "m3u8") continue;
+                if (format.filesize == null) continue;
+                if (format.resolution == "audio only" || (format.vcodec == "audio only" && !string.IsNullOrEmpty(format.acodec)))
+                {
+                    if (format.abr == null || format.asr == null) continue;
+                    audioFormats.Add(new AudioFormatItem
+                    {
+                        format = format,
+                        IsEmpty = false
+                    });
+                }
+                if(format.resolution != "audio only" || (format.acodec == "video only" && !string.IsNullOrEmpty(format.vcodec)))
+                {
+                    if (format.width == null || format.height == null || format.vbr == null) continue;
+                    videoFormats.Add(new VideoFormatItem
+                    {
+                        format = format,
+                        IsEmpty = false
+                    });
+                }
+            }
+            AudioDropdownAudioChoice.ItemsSource = audioFormats;
+            VideoDropdownVideoChoice.ItemsSource = videoFormats;
+
+            VideoDetailsScrollView.Visibility = Visibility.Visible;
+        }
+
+        private void updateDownloadButtonState()
+        {
+            VideoFormatItem selectedVideoFormat = (VideoFormatItem)VideoDropdownVideoChoice.SelectedItem;
+            AudioFormatItem selectedAudioFormat = (AudioFormatItem)AudioDropdownAudioChoice.SelectedItem;
+            if(selectedVideoFormat == null || selectedAudioFormat == null)
+            {
+                DownloadButton.IsEnabled = false;
+                return;
+            }
+            if(selectedAudioFormat.IsEmpty && selectedVideoFormat.IsEmpty)
+            {
+                DownloadButton.IsEnabled = false;
+                return;
+            }
+            if((selectedAudioFormat.IsEmpty && !selectedVideoFormat.IsEmpty) || (selectedVideoFormat.IsEmpty && !selectedAudioFormat.IsEmpty) || (!selectedAudioFormat.IsEmpty && !selectedVideoFormat.IsEmpty))
+            {
+                DownloadButton.IsEnabled = true;
+            } else
+            {
+                DownloadButton.IsEnabled = false;
+            }
+        }
+
+        private void VideoDropdownVideoChoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            updateDownloadButtonState();
+        }
+
+        private void AudioDropdownAudioChoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            updateDownloadButtonState();
+        }
+
+        private async void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            currentVideoData.title = Sanitizer.SanitizeFileName(Sanitizer.RemoveEmojis(currentVideoData.title));
+            VideoFormatItem selectedVideoFormat = (VideoFormatItem)VideoDropdownVideoChoice.SelectedItem;
+            AudioFormatItem selectedAudioFormat = (AudioFormatItem)AudioDropdownAudioChoice.SelectedItem;
+            DownloadButton.IsEnabled = false;
+            ProgressBar downloadingProgress = new ProgressBar { IsIndeterminate = true };
+            TextBlock downloadStep = new TextBlock { Text = "Initialisation du téléchargement...", Margin = new Thickness(0, 0, 0, 10) };
+            ContentDialog downloadingDialog = new ContentDialog
+            {
+                Title = "Téléchargement",
+                Width = 850,
+                Height = 400,
+                Content = new StackPanel
+                {
+                    Children =
+                    {
+                        new TextBlock{ Text = "Téléchargement de votre vidéo en cours..." },
+                        downloadStep,
+                        new TextBlock{ Text = $"Titre : {currentVideoData.title}" },
+                        new TextBlock{ Text = $"Qualité vidéo : {selectedVideoFormat.Display}" },
+                        new TextBlock{ Text = $"Qualité audio : {selectedAudioFormat.Display}", Margin = new Thickness(0, 0, 0, 20) },
+                        downloadingProgress
+                    }
+                },
+                PrimaryButtonText = "Lancer",
+                CloseButtonText = null,
+                SecondaryButtonText = "Renommer",
+                IsPrimaryButtonEnabled = false,
+                IsSecondaryButtonEnabled = false,
+                XamlRoot = this.Content.XamlRoot
+            };
+            var showTask = downloadingDialog.ShowAsync();
+            string stringFormat = "";
+            if(selectedVideoFormat.IsEmpty)
+            {
+                stringFormat = selectedAudioFormat.format.format_id;
+            } else if (selectedAudioFormat.IsEmpty)
+            {
+                stringFormat = selectedVideoFormat.format.format_id;
+            } else
+            {
+                stringFormat = $"{selectedVideoFormat.format.format_id}+{selectedAudioFormat.format.format_id}";
+            }
+            string finalFilepath = "";
+            await YtdlpManager.downloadYoutubeVideo(
+                currentVideoData,
+                stringFormat,
+                (progress) =>
+                {
+                    this.DispatcherQueue.TryEnqueue(() =>
+                    {
+                        downloadingProgress.IsIndeterminate = false;
+                        downloadingProgress.Value = Math.Round(progress);
+                    });
+                },
+                (milestoneName, arg) =>
+                {
+                    if(milestoneName == "dl_part" && stringFormat.Contains("+"))
+                    {
+                        this.DispatcherQueue.TryEnqueue(() =>
+                        {
+                            downloadStep.Text = $"Téléchargement de {arg}";
+                        });
+                    }
+                    if(milestoneName == "dl_final" && !stringFormat.Contains("+"))
+                    {
+                        finalFilepath = arg;
+                        this.DispatcherQueue.TryEnqueue(() =>
+                        {
+                            downloadStep.Text = $"Téléchargement de {arg}";
+                        });
+                    }
+                    if(milestoneName == "merging" && stringFormat.Contains("+"))
+                    {
+                        finalFilepath = arg;
+                        this.DispatcherQueue.TryEnqueue(() =>
+                        {
+                            downloadStep.Text = $"Fusion des formats dans {arg}";
+                        });
+                    }
+                }
+            );
+            downloadingDialog.Content = new StackPanel
+            {
+                Children =
+                    {
+                        new TextBlock{ Text = "Téléchargement terminé !" },
+                        new TextBlock{ Text = $"Enregistré en tant que {finalFilepath}" }
+                    }
+            };
+            downloadingDialog.IsPrimaryButtonEnabled = true;
+            downloadingDialog.IsSecondaryButtonEnabled = true;
+            downloadingDialog.CloseButtonText = "Fermer";
+            downloadingDialog.CloseButtonClick += (_, __) =>
+            {
+                showTask.Cancel();
+            };
+            downloadingDialog.PrimaryButtonClick += (_, __) =>
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = finalFilepath,
+                        UseShellExecute = true,
+                        Verb = "open"
+                    });
+                }
+                catch (Exception ex)
+                {
+                    ContentDialog errorDialog = new ContentDialog
+                    {
+                        Title = "Erreur",
+                        Content = $"Impossible d'ouvrir le fichier : {ex.Message}",
+                        CloseButtonText = "Fermer",
+                        XamlRoot = this.Content.XamlRoot
+                    };
+                    errorDialog.ShowAsync();
+                }
+            };
+            downloadingDialog.SecondaryButtonClick += (_, __) =>
+            {
+            };
+            DownloadButton.IsEnabled = true;
+        }
+    }
+}
