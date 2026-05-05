@@ -1,5 +1,4 @@
 ﻿using ABI.System;
-using PulseDL.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,20 +11,21 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using PulseDL.src.Util;
 
-namespace PulseDL
+namespace PulseDL.src
 {
     internal class YtdlpManager
     {
         public static string ytdlpPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "PulseDL",
             "yt-dlp.exe"
         );
 
         public static async Task<YoutubeVideoData> getVideoData(string url)
         {
-
+            Debug.WriteLine(ytdlpPath);
             var psi = new ProcessStartInfo
             {
                 FileName = ytdlpPath,
@@ -118,7 +118,7 @@ namespace PulseDL
         public static async Task<bool> isYtdlpInstalled()
         {
             string folder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "PulseDL"
             );
             string exePath = Path.Combine(folder, "yt-dlp.exe");
@@ -127,7 +127,7 @@ namespace PulseDL
         public static async Task<string> DownloadYtdlp()
         {
             string folder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "PulseDL"
             );
             Directory.CreateDirectory(folder);

@@ -20,6 +20,7 @@ using Microsoft.UI;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using PulseDL.src;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.

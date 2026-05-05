@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PulseDL.Util
+namespace PulseDL.src.Util
 {
     internal class FormatFileSize
     {

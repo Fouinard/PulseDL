@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace PulseDL.Util
+namespace PulseDL.src.Util
 {
     internal class Sanitizer
     {

@@ -14,7 +14,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Pages\DownloadVideoPage.xaml" />
+    <None Remove="src\Pages\DownloadVideoPage.xaml" />
     <None Remove="SettingsPage.xaml" />
   </ItemGroup>
 
@@ -24,7 +24,6 @@
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
 
@@ -42,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260416003" />
+    <PackageReference Include="Velopack" Version="0.0.1298" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="SettingsPage.xaml">
@@ -53,6 +53,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Assets\logo_pulsedl.ico</ApplicationIcon>
+  </PropertyGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
@@ -65,20 +68,19 @@
 
   <!-- Publish Properties -->
   <PropertyGroup>
-    <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
-    <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
-    <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
-    <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-    <WindowsPackageType>MSIX</WindowsPackageType>
+    <PublishReadyToRun>False</PublishReadyToRun>
+    <PublishTrimmed>false</PublishTrimmed>
+    <WindowsPackageType>None</WindowsPackageType>
     <DefaultLanguage>fr-FR</DefaultLanguage>
     <PackageCertificateThumbprint>9E9F96A12B25BD170C069364F0512F24A22A7E60</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <GenerateTestArtifacts>False</GenerateTestArtifacts>
-    <AppxBundle>Never</AppxBundle>
-    <AppInstallerUri>https://hosting.fouinard.fr/PulseDL.appinstaller</AppInstallerUri>
+    <AppxBundle>Always</AppxBundle>
+    <AppInstallerUri>https://cdn.pulsedl.fouinard.fr/</AppInstallerUri>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
   </PropertyGroup>
 </Project>

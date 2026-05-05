@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.Json;
 
-namespace PulseDL
+namespace PulseDL.src
 {
-    class Settings
+    internal class UpdateManager
     {
-        public required string DownloadPath { get; set; }
+        public bool
     }
 }

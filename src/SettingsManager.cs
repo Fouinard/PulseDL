@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PulseDL
+namespace PulseDL.src
 {
     internal class SettingsManager
     {
         private static string filePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "PulseDL",
             "settings.json"
         );

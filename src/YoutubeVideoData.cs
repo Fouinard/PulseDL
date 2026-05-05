@@ -1,16 +1,16 @@
-﻿using PulseDL.Util;
+﻿using PulseDL.src.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PulseDL
+namespace PulseDL.src
 {
     internal class AudioFormatItem
     {
         public bool IsEmpty { get; set; }
-        public YoutubeFormat format { get; set; }
+        public required YoutubeFormat format { get; set; }
         public string Display =>
             IsEmpty
                 ? "Ne pas inclure d'audio"
@@ -20,7 +20,7 @@ namespace PulseDL
     internal class VideoFormatItem
     {
         public bool IsEmpty { get; set; }
-        public YoutubeFormat format { get; set; }
+        public required YoutubeFormat format { get; set; }
         public string Display => 
             IsEmpty 
                 ? "Ne pas inclure de vidéo"
@@ -29,16 +29,16 @@ namespace PulseDL
 
     internal class YoutubeFormat
     {
-        public string format_id { get; set; }
-        public string ext { get; set; }
-        public string vcodec { get; set; }
-        public string acodec { get; set; }
+        public required string format_id { get; set; }
+        public string? ext { get; set; }
+        public string? vcodec { get; set; }
+        public string? acodec { get; set; }
         public int? width { get; set; }
         public int? height { get; set; }
-        public string format { get; set; }
+        public string? format { get; set; }
         public long? filesize { get; set; }
-        public string resolution { get; set; }
-        public string protocol { get; set; }
+        public string? resolution { get; set; }
+        public string? protocol { get; set; }
         public float? abr { get; set; }
         public float? asr { get; set; }
         public float? vbr { get; set; }
@@ -48,9 +48,9 @@ namespace PulseDL
 
     internal class YoutubeVideoData
     {
-        public string id { get; set; }
-        public string title { get; set; }
-        public string thumbnail { get; set; }
-        public List<YoutubeFormat> formats { get; set; }
+        public string? id { get; set; }
+        public string? title { get; set; }
+        public string? thumbnail { get; set; }
+        public List<YoutubeFormat>? formats { get; set; }
     }
 }
