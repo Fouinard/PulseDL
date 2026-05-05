@@ -8,6 +8,9 @@ namespace PulseDL.src
 {
     internal class UpdateManager
     {
-        public bool
+        public string GetLatestVersion()
+        {
+            return "";
+        }
     }
 }
