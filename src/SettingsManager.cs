@@ -21,7 +21,8 @@ namespace PulseDL.src
             {
                 return new Settings
                 {
-                    DownloadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")
+                    DownloadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+                    DefaultBrowser = "Sans navigateur"
                 };
             }
             string json = File.ReadAllText(filePath);

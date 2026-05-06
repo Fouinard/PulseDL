@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PulseDL.src.Util;
+using PulseDL.src;
 
 namespace PulseDL.src
 {
@@ -26,10 +27,23 @@ namespace PulseDL.src
         public static async Task<YoutubeVideoData> getVideoData(string url)
         {
             Debug.WriteLine(ytdlpPath);
+
+            var settings = SettingsManager.Load();
+            string browser = settings.DefaultBrowser.ToLower();
+
+            if (string.IsNullOrEmpty(browser) || browser == "sans navigateur")
+            {
+                browser = "";
+            }
+            else
+            {
+                browser = "--cookies-from-browser " + settings.DefaultBrowser.ToLower();
+            }
+
             var psi = new ProcessStartInfo
             {
                 FileName = ytdlpPath,
-                Arguments = $"--js-runtimes node --no-playlist --cookies-from-browser edge -J --skip-download \"{url}\"",
+                Arguments = $"--js-runtimes node --no-playlist {browser} -J --skip-download \"{url}\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,

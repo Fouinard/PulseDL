@@ -10,5 +10,6 @@ namespace PulseDL.src
     class Settings
     {
         public required string DownloadPath { get; set; }
+        public string DefaultBrowser { get; set; } = "Sans navigateur";
     }
 }

@@ -170,9 +170,9 @@ namespace PulseDL.Pages
                         downloadingProgress
                     }
                 },
-                PrimaryButtonText = "Lancer",
+                PrimaryButtonText = "Lancer la vidéo",
                 CloseButtonText = null,
-                SecondaryButtonText = "Renommer",
+                SecondaryButtonText = "Ouvrir le dossier",
                 IsPrimaryButtonEnabled = false,
                 IsSecondaryButtonEnabled = false,
                 XamlRoot = this.Content.XamlRoot
@@ -268,6 +268,21 @@ namespace PulseDL.Pages
             };
             downloadingDialog.SecondaryButtonClick += (_, __) =>
             {
+                try
+                {
+                    Process.Start("explorer.exe", "/select,\"" + finalFilepath + "\"");
+                }
+                catch (Exception ex)
+                {
+                    ContentDialog errorDialog = new ContentDialog
+                    {
+                        Title = "Erreur",
+                        Content = $"Impossible d'ouvrir le fichier : {ex.Message}",
+                        CloseButtonText = "Fermer",
+                        XamlRoot = this.Content.XamlRoot
+                    };
+                    errorDialog.ShowAsync();
+                }
             };
             DownloadButton.IsEnabled = true;
         }

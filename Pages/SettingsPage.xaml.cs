@@ -17,6 +17,7 @@ using Windows.Foundation.Collections;
 using System.Threading.Tasks;
 using PulseDL.Pages;
 using PulseDL.src;
+using System.Diagnostics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -36,6 +37,10 @@ namespace PulseDL
             if(settings.DownloadPath != null)
             {
                 DownloadFolder.Content = settings.DownloadPath;
+            }
+            if (settings.DefaultBrowser != null)
+            {
+                BrowserSelector.SelectedItem = settings.DefaultBrowser;
             }
         }
 
@@ -102,6 +107,18 @@ namespace PulseDL
             };
             InstallYtdlp.Content = "Yt-dlp est déja installé";
             InstallYtdlp.IsEnabled = false;
+        }
+
+        private void BrowserSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = sender as ComboBox;
+            string selectedNavigator = comboBox.SelectedItem as string;
+
+            if (selectedNavigator != null)
+            {
+                settings.DefaultBrowser = selectedNavigator;
+                SettingsManager.Save(settings);
+            }
         }
     }
 }
