@@ -29,6 +29,22 @@
         </Button>
 
 
+        <ComboBox SelectionChanged="BrowserSelector_SelectionChanged"
+                  Header="Navigateur par défaut de l'application"
+                  x:Name="BrowserSelector"
+                  PlaceholderText="Veuillez selectionner un navigateur par défaut"
+                  Width="750"
+                  Margin="0,0,0,20">
+            <x:String>Sans navigateur</x:String>
+            <x:String>Brave</x:String>
+            <x:String>Edge</x:String>
+            <x:String>Firefox</x:String>
+            <x:String>Opera</x:String>
+            <x:String>Vivaldi</x:String>
+            <x:String>Whale</x:String>
+        </ComboBox>
+
+
         <TextBlock Style="{StaticResource BodyTextBlockStyle}">
             Chemin de YT-DLP
         </TextBlock>

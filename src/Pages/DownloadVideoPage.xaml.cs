@@ -12,8 +12,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Windows.Devices.PointOfService;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -31,6 +33,45 @@ namespace PulseDL.src.Pages
         public DownloadVideoPage()
         {
             InitializeComponent();
+            CheckForUpdates();
+        }
+
+        private async Task CheckForUpdates()
+        {
+            LatestVersionInfo latestVersion = await UpdateManager.GetLatestVersionInfo();
+            if (latestVersion == null)
+            {
+                Debug.WriteLine("Failed to check for updates.");
+                return;
+            }
+            var version = Assembly
+                .GetExecutingAssembly()
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion;
+            Debug.WriteLine(version);
+            Debug.WriteLine(latestVersion.Core.Version);
+            if (latestVersion.Core.Version != version)
+            {
+                Debug.WriteLine("Version differentes");
+                Button updateButton = new()
+                {
+                    Content = "Mettre à jour"
+                };
+                updateButton.Click += (s, e) =>
+                {
+                    UpdateManager.InstallLatestVersion(latestVersion);
+                };
+                InfoBar updateInfoBar = new()
+                {
+                    Title = "Mise à jour disponible",
+                    IsOpen = true,
+                    Severity = InfoBarSeverity.Informational,
+                    Margin = new Thickness(0, 20, 0, 0),
+                    Message = $"Une nouvelle version de PulseDL est disponible (v{latestVersion.Core.Version}). Cela téléchargera la nouvelle version et redémarrera PulseDL automatiquement. Voulez-vous mettre PulseDL à jour ?",
+                    ActionButton = updateButton,
+                };
+                MainStackPanel.Children.Insert(0, updateInfoBar);
+            }
         }
 
         private YoutubeVideoData currentVideoData = new YoutubeVideoData();
@@ -151,9 +192,9 @@ namespace PulseDL.src.Pages
             VideoFormatItem selectedVideoFormat = (VideoFormatItem)VideoDropdownVideoChoice.SelectedItem;
             AudioFormatItem selectedAudioFormat = (AudioFormatItem)AudioDropdownAudioChoice.SelectedItem;
             DownloadButton.IsEnabled = false;
-            ProgressBar downloadingProgress = new ProgressBar { IsIndeterminate = true };
-            TextBlock downloadStep = new TextBlock { Text = "Initialisation du téléchargement...", Margin = new Thickness(0, 0, 0, 10) };
-            ContentDialog downloadingDialog = new ContentDialog
+            ProgressBar downloadingProgress = new() { IsIndeterminate = true };
+            TextBlock downloadStep = new() { Text = "Initialisation du téléchargement...", Margin = new Thickness(0, 0, 0, 10) };
+            ContentDialog downloadingDialog = new()
             {
                 Title = "Téléchargement",
                 Width = 850,

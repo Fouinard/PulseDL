@@ -1,6 +1,8 @@
 ﻿# Build folders
 bin/
 obj/
+build/
+Release/
 
 # Visual Studio
 .vs/
@@ -8,6 +10,7 @@ obj/
 *.suo
 *.userosscache
 *.sln.docstates
+*.code-workspace
 
 # Rider / VSCode
 .idea/

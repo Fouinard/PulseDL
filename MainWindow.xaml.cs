@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Windowing;
 using WinRT.Interop;
-using PulseDL.Pages;
+using PulseDL.src.Pages;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "PulseDL"
-#define MyAppVersion "1.0.2"
+#define MyAppVersion "1.0.0"
 #define MyAppPublisher "Fouinard"
 #define MyAppURL "https://pulsedl.fouinard.fr"
 #define MyAppExeName "PulseDL.exe"
@@ -14,7 +14,7 @@
 AppId={{7143E9F5-4C85-486C-AF4D-F74E8F576683}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -34,7 +34,7 @@ AllowNoIcons=yes
 ; Remove the following line to run in administrative install mode (install for all users).
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-OutputDir=L:\Cs\PulseDL
+OutputDir=L:\Cs\PulseDL\Release
 OutputBaseFilename=PulseDL-{#MyAppVersion}-setup
 SetupIconFile=L:\Cs\PulseDL\Assets\logo_pulsedl.ico
 SolidCompression=yes
@@ -47,15 +47,16 @@ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "L:\Cs\PulseDL\bin\x64\Release\net8.0-windows10.0.19041.0\win-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "L:\Cs\PulseDL\bin\x64\Release\net8.0-windows10.0.19041.0\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "L:\Cs\PulseDL\Release\Unpackaged\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "L:\Cs\PulseDL\Release\Unpackaged\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall
+
+
 

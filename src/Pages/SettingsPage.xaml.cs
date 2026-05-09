@@ -5,18 +5,20 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using PulseDL.src.Pages;
+using PulseDL.src;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using Windows.Storage.Pickers;
-using WinRT.Interop;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using System.Threading.Tasks;
-using PulseDL.Pages;
-using PulseDL.src;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using WinRT.Interop;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -32,14 +34,18 @@ namespace PulseDL.src.Pages
         public SettingsPage()
         {
             InitializeComponent();
-            init();
-            if(settings.DownloadPath != null)
+            Init();
+            if (settings.DownloadPath != null)
             {
                 DownloadFolder.Content = settings.DownloadPath;
             }
+            if (settings.DefaultBrowser != null)
+            {
+                BrowserSelector.SelectedItem = settings.DefaultBrowser;
+            }
         }
 
-        private async void init()
+        private async void Init()
         {
             if (await YtdlpManager.isYtdlpInstalled())
             {
@@ -55,7 +61,8 @@ namespace PulseDL.src.Pages
             InitializeWithWindow.Initialize(picker, hwnd);
             picker.FileTypeFilter.Add("*");
             var folder = await picker.PickSingleFolderAsync();
-            if (folder != null) {
+            if (folder != null)
+            {
                 settings.DownloadPath = folder.Path;
                 SettingsManager.Save(settings);
                 DownloadFolder.Content = folder.Path;
@@ -102,6 +109,18 @@ namespace PulseDL.src.Pages
             };
             InstallYtdlp.Content = "Yt-dlp est déja installé";
             InstallYtdlp.IsEnabled = false;
+        }
+
+        private void BrowserSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = sender as ComboBox;
+            string selectedNavigator = comboBox.SelectedItem as string;
+
+            if (selectedNavigator != null)
+            {
+                settings.DefaultBrowser = selectedNavigator;
+                SettingsManager.Save(settings);
+            }
         }
     }
 }

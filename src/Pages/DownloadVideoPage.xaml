@@ -10,6 +10,7 @@
     <StackPanel Orientation="Vertical"
                 Spacing="10"
                 Padding="50"
+                x:Name="MainStackPanel"
                 HorizontalAlignment="Left">
         <TextBlock Margin="0,0,0,30"
                    Style="{StaticResource TitleTextBlockStyle}">
