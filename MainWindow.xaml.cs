@@ -47,10 +47,10 @@ namespace PulseDL
                 presenter.PreferredMinimumHeight = 650;
             }
             ExtendsContentIntoTitleBar = true;
-            init();
+            Init();
         }
 
-        private async void init()
+        private async void Init()
         {
             if (!await YtdlpManager.isYtdlpInstalled())
             {
@@ -64,7 +64,7 @@ namespace PulseDL
             }
         }
 
-        private Dictionary<string, Type> pages = new()
+        private readonly Dictionary<string, Type> pages = new()
         {
             { "DownloadVideoPage", typeof(DownloadVideoPage) }
         };

@@ -26,8 +26,6 @@ namespace PulseDL.src
 
         public static async Task<YoutubeVideoData> getVideoData(string url)
         {
-            Debug.WriteLine(ytdlpPath);
-
             var settings = SettingsManager.Load();
             string browser = settings.DefaultBrowser.ToLower();
 

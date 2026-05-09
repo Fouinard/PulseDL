@@ -57,8 +57,6 @@ namespace PulseDL.src
                 }
                 checksum = sb.ToString();
             }
-            Debug.WriteLine(checksum);
-            Debug.WriteLine(versionInfo.Core.Checksum);
             if (checksum.ToLower() != versionInfo.Core.Checksum.ToLower())
             {
                 File.Delete(updateExecutablePath);

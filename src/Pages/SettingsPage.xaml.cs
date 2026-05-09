@@ -56,7 +56,7 @@ namespace PulseDL.src.Pages
 
         private async void DownloadFolder_Click(object sender, RoutedEventArgs e)
         {
-            FolderPicker picker = new FolderPicker();
+            FolderPicker picker = new();
             var hwnd = WindowNative.GetWindowHandle(App.MainWindow);
             InitializeWithWindow.Initialize(picker, hwnd);
             picker.FileTypeFilter.Add("*");
@@ -78,7 +78,7 @@ namespace PulseDL.src.Pages
                 return;
             }
 
-            ContentDialog downloadingDialog = new ContentDialog
+            ContentDialog downloadingDialog = new()
             {
                 Title = "Téléchargement de yt-dlp",
                 Content = new StackPanel
