@@ -1,12 +1,3 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using PulseDL.src;
-using PulseDL.src.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,9 +7,20 @@ using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Navigation;
+using PulseDL.src;
+using PulseDL.src.Util;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Devices.PointOfService;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -84,6 +86,26 @@ namespace PulseDL.src.Pages
             } else
             {
                 SearchButton.IsEnabled = true;
+            }
+        }
+
+        private void UrlInput_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == VirtualKey.Enter)
+            {
+                SearchButton_Click(null, null);
+                e.Handled = true;
+            }
+                
+        }
+
+        private async void PasteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var package = Clipboard.GetContent();
+            if (package.Contains(StandardDataFormats.Text))
+            {
+                var text = await package.GetTextAsync();
+                UrlInput.Text = text;
             }
         }
 

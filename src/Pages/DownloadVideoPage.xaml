@@ -19,15 +19,20 @@
         <TextBlock Style="{StaticResource BodyTextBlockStyle}">
             Entrez l'URL de la vidéo YouTube à télécharger
         </TextBlock>
-        <TextBox Width="500"
-                 x:Name="UrlInput"
-                 HorizontalAlignment="Left"
-                 TextChanged="UrlInput_TextChanged"/>
         <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,30">
+            <TextBox Width="500"
+                x:Name="UrlInput"
+                HorizontalAlignment="Left"
+                TextChanged="UrlInput_TextChanged"
+                KeyDown="UrlInput_KeyDown"/>
+            <Button x:Name="PasteButton"
+                Click="PasteButton_Click">
+                <FontIcon Glyph="&#xE77F;" />
+            </Button>
             <Button x:Name="SearchButton"
                     IsEnabled="False"
                     Click="SearchButton_Click">
-                Rechercher
+                <FontIcon Glyph="&#xE721;" />
             </Button>
             <ProgressRing x:Name="SearchProgressRing" IsActive="False" Width="20" Height="20" VerticalAlignment="Center" />
         </StackPanel>
