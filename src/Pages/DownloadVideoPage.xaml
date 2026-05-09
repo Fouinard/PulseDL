@@ -7,46 +7,70 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       NavigationCacheMode="Enabled"
       mc:Ignorable="d">
-    <StackPanel Orientation="Vertical"
-                Spacing="10"
-                Padding="50"
-                x:Name="MainStackPanel"
-                HorizontalAlignment="Left">
-        <TextBlock Margin="0,0,0,30"
-                   Style="{StaticResource TitleTextBlockStyle}">
-            Télécharger
-        </TextBlock>
-        <TextBlock Style="{StaticResource BodyTextBlockStyle}">
-            Entrez l'URL de la vidéo YouTube à télécharger
-        </TextBlock>
-        <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,30">
-            <TextBox Width="500"
-                x:Name="UrlInput"
-                HorizontalAlignment="Left"
-                TextChanged="UrlInput_TextChanged"
-                KeyDown="UrlInput_KeyDown"/>
-            <Button x:Name="PasteButton"
-                Click="PasteButton_Click">
-                <FontIcon Glyph="&#xE77F;" />
-            </Button>
-            <Button x:Name="SearchButton"
-                    IsEnabled="False"
-                    Click="SearchButton_Click">
-                <FontIcon Glyph="&#xE721;" />
-            </Button>
-            <ProgressRing x:Name="SearchProgressRing" IsActive="False" Width="20" Height="20" VerticalAlignment="Center" />
+
+    <Grid Padding="50"
+          RowSpacing="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical"
+                    Spacing="10"
+                    Grid.Row="0"
+                    x:Name="MainStackPanel"
+                    HorizontalAlignment="Left">
+            <TextBlock Margin="0,0,0,30"
+                       Style="{StaticResource TitleTextBlockStyle}">
+                Télécharger
+            </TextBlock>
+            <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                Entrez l'URL de la vidéo YouTube à télécharger
+            </TextBlock>
+            <StackPanel Orientation="Horizontal"
+                        Spacing="10"
+                        Margin="0,0,0,30">
+                <TextBox Width="500"
+                         x:Name="UrlInput"
+                         HorizontalAlignment="Left"
+                         TextChanged="UrlInput_TextChanged"
+                         KeyDown="UrlInput_KeyDown"/>
+                <Button x:Name="PasteButton"
+                        Click="PasteButton_Click">
+                    <FontIcon Glyph="&#xE77F;"/>
+                </Button>
+                <Grid x:Name="SearchButtonGrid">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Rechercher la vidéo"/>
+                    </ToolTipService.ToolTip>
+                    <Button x:Name="SearchButton"
+                            IsEnabled="False"
+                            Click="SearchButton_Click">
+                        <FontIcon Glyph="&#xE721;"/>
+                    </Button>
+                </Grid>
+                <ProgressRing x:Name="SearchProgressRing"
+                              IsActive="False"
+                              Width="20"
+                              Height="20"
+                              VerticalAlignment="Center"/>
+            </StackPanel>
         </StackPanel>
-        <ScrollView Height="750"
-                    IsTabStop="True"
+        <ScrollView IsTabStop="True"
+                    Grid.Row="1"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
                     Visibility="Collapsed"
                     x:Name="VideoDetailsScrollView">
-            <StackPanel Orientation="Vertical" Spacing="10" HorizontalAlignment="Left">
-                <TextBlock x:Name="VideoTitle" Style="{StaticResource BodyLargeStrongTextBlockStyle}"/>
-                <Image Width="400" HorizontalAlignment="Left">
+            <StackPanel Orientation="Vertical"
+                        Spacing="10"
+                        HorizontalAlignment="Left">
+                <TextBlock x:Name="VideoTitle"
+                           Style="{StaticResource BodyLargeStrongTextBlockStyle}"/>
+                <Image Width="400"
+                       HorizontalAlignment="Left">
                     <Image.Source>
-                        <BitmapImage UriSource="" x:Name="VideoThumbnail"/>
+                        <BitmapImage UriSource=""
+                                     x:Name="VideoThumbnail"/>
                     </Image.Source>
                 </Image>
                 <ComboBox Header="Qualité vidéo"
@@ -57,7 +81,7 @@
                 <ComboBox Header="Qualité audio"
                           SelectionChanged="AudioDropdownAudioChoice_SelectionChanged"
                           PlaceholderText="Sélectionnez la qualité audio"
-                          x:Name="AudioDropdownAudioChoice" 
+                          x:Name="AudioDropdownAudioChoice"
                           DisplayMemberPath="Display"></ComboBox>
                 <Button Content="Télécharger"
                         IsEnabled="False"
@@ -66,5 +90,5 @@
                         Margin="0,30,0,0"/>
             </StackPanel>
         </ScrollView>
-    </StackPanel>
+    </Grid>
 </Page>

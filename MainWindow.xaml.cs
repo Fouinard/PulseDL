@@ -20,7 +20,8 @@ using Microsoft.UI;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using PulseDL.src;
+using PulseDL.src.Managers;
+using PulseDL.src.Types;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -52,7 +53,7 @@ namespace PulseDL
 
         private async void Init()
         {
-            if (!await YtdlpManager.isYtdlpInstalled())
+            if (!await YtdlpManager.IsYtdlpInstalled() || !await FfmpegManager.IsFfmpegInstalled())
             {
                 NavView.SelectedItem = NavView.SettingsItem;
                 MainFrame.Navigate(typeof(SettingsPage));

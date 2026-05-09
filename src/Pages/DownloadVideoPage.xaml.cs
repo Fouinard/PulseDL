@@ -14,7 +14,8 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using PulseDL.src;
+using PulseDL.src.Managers;
+using PulseDL.src.Types;
 using PulseDL.src.Util;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Devices.PointOfService;
@@ -36,6 +37,25 @@ namespace PulseDL.src.Pages
         {
             InitializeComponent();
             CheckForUpdates();
+            Init();
+        }
+
+        private bool DisableSearchButton = false;
+
+        private async void Init()
+        {
+            if (!(await FfmpegManager.IsFfmpegInstalled()) || !(await YtdlpManager.IsYtdlpInstalled()))
+            {
+                DisableSearchButton = true;
+                SearchButton.IsEnabled = false;
+                ToolTip tooltip = new()
+                {
+                    Content = "Impossible de lancer la recherche car Yt-dlp ou Ffmpeg n'est pas installé. Vérifiez la page des paramètres."
+                };
+                ToolTipService.SetToolTip(SearchButtonGrid, tooltip);
+                Debug.WriteLine("testgds");
+                return;
+            }
         }
 
         private async Task CheckForUpdates()
@@ -50,11 +70,8 @@ namespace PulseDL.src.Pages
                 .GetExecutingAssembly()
                 .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
                 .InformationalVersion;
-            Debug.WriteLine(version);
-            Debug.WriteLine(latestVersion.Core.Version);
             if (latestVersion.Core.Version != version)
             {
-                Debug.WriteLine("Version differentes");
                 Button updateButton = new()
                 {
                     Content = "Mettre à jour"
@@ -87,6 +104,10 @@ namespace PulseDL.src.Pages
             {
                 SearchButton.IsEnabled = true;
             }
+            if(DisableSearchButton)
+            {
+                SearchButton.IsEnabled = false;
+            }
         }
 
         private void UrlInput_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -114,7 +135,7 @@ namespace PulseDL.src.Pages
             string url = UrlInput.Text;
             SearchButton.IsEnabled = false;
             SearchProgressRing.IsActive = true;
-            YoutubeVideoData video = await YtdlpManager.getVideoData(url);
+            YoutubeVideoData video = await YtdlpManager.GetVideoData(url);
             SearchButton.IsEnabled = true;
             SearchProgressRing.IsActive = false;
             VideoTitle.Text = video.title;
@@ -175,11 +196,11 @@ namespace PulseDL.src.Pages
             VideoDetailsScrollView.Visibility = Visibility.Visible;
         }
 
-        private void updateDownloadButtonState()
+        private async void UpdateDownloadButtonState()
         {
             VideoFormatItem selectedVideoFormat = (VideoFormatItem)VideoDropdownVideoChoice.SelectedItem;
             AudioFormatItem selectedAudioFormat = (AudioFormatItem)AudioDropdownAudioChoice.SelectedItem;
-            if(selectedVideoFormat == null || selectedAudioFormat == null)
+            if (selectedVideoFormat == null || selectedAudioFormat == null)
             {
                 DownloadButton.IsEnabled = false;
                 return;
@@ -200,12 +221,12 @@ namespace PulseDL.src.Pages
 
         private void VideoDropdownVideoChoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            updateDownloadButtonState();
+            UpdateDownloadButtonState();
         }
 
         private void AudioDropdownAudioChoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            updateDownloadButtonState();
+            UpdateDownloadButtonState();
         }
 
         private async void DownloadButton_Click(object sender, RoutedEventArgs e)
@@ -253,7 +274,7 @@ namespace PulseDL.src.Pages
                 stringFormat = $"{selectedVideoFormat.format.format_id}+{selectedAudioFormat.format.format_id}";
             }
             string finalFilepath = "";
-            await YtdlpManager.downloadYoutubeVideo(
+            await YtdlpManager.DownloadYoutubeVideo(
                 currentVideoData,
                 stringFormat,
                 (progress) =>

@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace PulseDL.src
+namespace PulseDL.src.Managers
 {
     public class ComponentInfo
     {

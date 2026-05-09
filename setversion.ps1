@@ -1,7 +1,8 @@
-$version = Read-Host "Nouveau numéro de version (ex: 1.2.5)"
-
 [xml]$csproj = Get-Content "PulseDL.csproj"
 $versionGroup = $csproj.Project.PropertyGroup | Where-Object { $_.Version }
+$actVer = $versionGroup.Version
+$version = Read-Host "Nouveau numéro de version (actuelle: $actVer)"
+
 $versionGroup.Version = $version
 $versionGroup.AssemblyVersion = "$version.0"
 $versionGroup.FileVersion = "$version.0"

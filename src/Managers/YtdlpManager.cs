@@ -1,5 +1,4 @@
-﻿using ABI.System;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,9 +11,9 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PulseDL.src.Util;
-using PulseDL.src;
+using PulseDL.src.Types;
 
-namespace PulseDL.src
+namespace PulseDL.src.Managers
 {
     internal class YtdlpManager
     {
@@ -24,7 +23,7 @@ namespace PulseDL.src
             "yt-dlp.exe"
         );
 
-        public static async Task<YoutubeVideoData> getVideoData(string url)
+        public static async Task<YoutubeVideoData> GetVideoData(string url)
         {
             var settings = SettingsManager.Load();
             string browser = settings.DefaultBrowser.ToLower();
@@ -41,7 +40,7 @@ namespace PulseDL.src
             var psi = new ProcessStartInfo
             {
                 FileName = ytdlpPath,
-                Arguments = $"--js-runtimes node --no-playlist {browser} -J --skip-download \"{url}\"",
+                Arguments = $"--js-runtimes node --no-playlist {browser} -J --ffmpeg-location {FfmpegManager.ffmpegPath} --skip-download \"{url}\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
@@ -64,7 +63,7 @@ namespace PulseDL.src
             return video;
         }
 
-        public static async Task downloadYoutubeVideo(
+        public static async Task DownloadYoutubeVideo(
             YoutubeVideoData videoData,
             string format,
             Action<float> progressCallback,
@@ -127,14 +126,9 @@ namespace PulseDL.src
             await process.WaitForExitAsync();
             return;
         }
-        public static async Task<bool> isYtdlpInstalled()
+        public static async Task<bool> IsYtdlpInstalled()
         {
-            string folder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "PulseDL"
-            );
-            string exePath = Path.Combine(folder, "yt-dlp.exe");
-            return File.Exists(exePath);
+            return File.Exists(ytdlpPath);
         }
         public static async Task<string> DownloadYtdlp()
         {
@@ -143,26 +137,16 @@ namespace PulseDL.src
                 "PulseDL"
             );
             Directory.CreateDirectory(folder);
-            string exePath = Path.Combine(folder, "yt-dlp.exe");
-            using HttpClient client = new HttpClient();
+            using HttpClient client = new();
             client.DefaultRequestHeaders.Add("User-Agent", "PulseDL");
-            string json = await client.GetStringAsync("https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest");
+            string json = await client.GetStringAsync("https://cdn.pulsedl.fouinard.fr/latest.json");
             using JsonDocument doc = JsonDocument.Parse(json);
-            var assets = doc.RootElement.GetProperty("assets");
-            string downloadUrl = "";
-            foreach(var asset in assets.EnumerateArray())
-            {
-                string name = asset.GetProperty("name").GetString();
-                if(name == "yt-dlp.exe")
-                {
-                    downloadUrl = asset.GetProperty("browser_download_url").GetString();
-                    break;
-                }
-            }
+            var assets = doc.RootElement.GetProperty("ytdlp");
+            string downloadUrl = assets.GetProperty("file").ToString();
             if(string.IsNullOrEmpty(downloadUrl)) throw new System.Exception("Could not find yt-dlp.exe in the latest release assets.");
             byte[] data = await client.GetByteArrayAsync(downloadUrl);
-            await File.WriteAllBytesAsync(exePath, data);
-            return exePath;
+            await File.WriteAllBytesAsync(ytdlpPath, data);
+            return ytdlpPath;
         }
     }
 }

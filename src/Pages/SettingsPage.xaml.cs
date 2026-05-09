@@ -6,7 +6,6 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using PulseDL.src.Pages;
-using PulseDL.src;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,6 +18,8 @@ using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
+using PulseDL.src.Managers;
+using PulseDL.src.Types;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -47,10 +48,15 @@ namespace PulseDL.src.Pages
 
         private async void Init()
         {
-            if (await YtdlpManager.isYtdlpInstalled())
+            if (await YtdlpManager.IsYtdlpInstalled())
             {
                 InstallYtdlp.Content = "Yt-dlp est déja installé";
                 InstallYtdlp.IsEnabled = false;
+            }
+            if(await FfmpegManager.IsFfmpegInstalled())
+            {
+                InstallFfmpeg.Content = "Ffmpeg est déja installé";
+                InstallFfmpeg.IsEnabled = false;
             }
         }
 
@@ -71,7 +77,7 @@ namespace PulseDL.src.Pages
 
         private async void InstallYtdlp_Click(object sender, RoutedEventArgs e)
         {
-            if (await YtdlpManager.isYtdlpInstalled())
+            if (await YtdlpManager.IsYtdlpInstalled())
             {
                 InstallYtdlp.Content = "Yt-dlp est déja installé";
                 InstallYtdlp.IsEnabled = false;
@@ -121,6 +127,48 @@ namespace PulseDL.src.Pages
                 settings.DefaultBrowser = selectedNavigator;
                 SettingsManager.Save(settings);
             }
+        }
+
+        private async void InstallFfmpeg_Click(object sender, RoutedEventArgs e)
+        {
+            if (await FfmpegManager.IsFfmpegInstalled())
+            {
+                InstallFfmpeg.Content = "Ffmpeg est déja installé";
+                InstallFfmpeg.IsEnabled = false;
+                return;
+            }
+
+            ContentDialog downloadingDialog = new()
+            {
+                Title = "Téléchargement de ffmpeg",
+                Content = new StackPanel
+                {
+                    Children =
+                    {
+                        new TextBlock{ Text = "Téléchargement de ffmpeg en cours...", Margin = new Thickness(0,0,0,10) },
+                        new ProgressRing{ IsActive = true, Width = 40, Height = 40 }
+                    }
+                },
+                PrimaryButtonText = "Quitter",
+                CloseButtonText = null,
+                IsPrimaryButtonEnabled = false,
+                IsSecondaryButtonEnabled = false,
+                XamlRoot = this.Content.XamlRoot
+            };
+
+            var showTask = downloadingDialog.ShowAsync();
+            await FfmpegManager.DownloadFfmpeg();
+            downloadingDialog.Content = new TextBlock
+            {
+                Text = "Installation terminée !"
+            };
+            downloadingDialog.IsPrimaryButtonEnabled = true;
+            downloadingDialog.PrimaryButtonClick += (_, __) =>
+            {
+                showTask.Cancel();
+            };
+            InstallFfmpeg.Content = "Ffmpeg est déja installé";
+            InstallFfmpeg.IsEnabled = false;
         }
     }
 }

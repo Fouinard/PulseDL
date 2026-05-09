@@ -1,10 +1,13 @@
-$version = Read-Host "Numéro de version à release (ex: 1.2.5)"
+[xml]$csproj = Get-Content "PulseDL.csproj"
+$versionGroup = $csproj.Project.PropertyGroup | Where-Object { $_.Version }
+$actVer = $versionGroup.Version
+$version = Read-Host "Numéro de version à release (actuelle: $actVer)"
 
 $ffmpegUpdate = $false
 $ytdlpUpdate = $false
 
 choice /c ON /m "Mettre à jour ffmpeg ?"
-if($LASTEXITCODE -eq 1) {
+if ($LASTEXITCODE -eq 1) {
     Add-Type -AssemblyName System.Windows.Forms
     $dialog = New-Object System.Windows.Forms.OpenFileDialog
     $dialog.Filter = "ffmpeg.exe|ffmpeg.exe"
@@ -19,7 +22,7 @@ if($LASTEXITCODE -eq 1) {
 }
 
 choice /c ON /m "Mettre à jour ytdlp ?"
-if($LASTEXITCODE -eq 1) {
+if ($LASTEXITCODE -eq 1) {
     Add-Type -AssemblyName System.Windows.Forms
     $dialog = New-Object System.Windows.Forms.OpenFileDialog
     $dialog.Filter = "yt-dlp.exe|yt-dlp.exe"
@@ -37,8 +40,6 @@ Remove-Item -Path "Release" -Recurse -Force -ErrorAction Ignore
 
 $originalLocation = Get-Location
 
-[xml]$csproj = Get-Content "PulseDL.csproj"
-$versionGroup = $csproj.Project.PropertyGroup | Where-Object { $_.Version }
 $versionGroup.Version = $version
 $versionGroup.AssemblyVersion = "$version.0"
 $versionGroup.FileVersion = "$version.0"
@@ -68,12 +69,12 @@ $latestJson.core.version = $version
 $latestJson.core.file = "https://cdn.pulsedl.fouinard.fr/PulseDL-$version-setup.exe"
 $latestJson.core.checksum = (Get-FileHash "P:\PulseDL-$version-setup.exe" -Algorithm SHA256).Hash
 
-if($ffmpegUpdate) {
+if ($ffmpegUpdate) {
     $latestJson.ffmpeg.version = (& "P:\ffmpeg.exe" -version 2>&1)[0]
     $latestJson.ffmpeg.checksum = (Get-FileHash "P:\ffmpeg.exe" -Algorithm SHA256).Hash
 }
 
-if($ytdlpUpdate) {
+if ($ytdlpUpdate) {
     $latestJson.ytdlp.version = (& "P:\yt-dlp.exe" -version 2>&1)[0]
     $latestJson.ytdlp.checksum = (Get-FileHash "P:\yt-dlp.exe" -Algorithm SHA256).Hash
 }

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using PulseDL.src.Types;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PulseDL.src
+namespace PulseDL.src.Managers
 {
     internal class SettingsManager
     {

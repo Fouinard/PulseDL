@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PulseDL.src
+namespace PulseDL.src.Types
 {
     internal class AudioFormatItem
     {

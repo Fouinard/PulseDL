@@ -46,12 +46,21 @@
 
 
         <TextBlock Style="{StaticResource BodyTextBlockStyle}">
-            Chemin de YT-DLP
+            Yt-dlp
         </TextBlock>
         <Button Click="InstallYtdlp_Click"
-                Width="750"
-                x:Name="InstallYtdlp">
+        Width="750"
+        x:Name="InstallYtdlp">
             Installer Yt-dlp
+        </Button>
+
+        <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+            Ffmpeg
+        </TextBlock>
+        <Button Click="InstallFfmpeg_Click"
+        Width="750"
+        x:Name="InstallFfmpeg">
+            Installer Ffmpeg
         </Button>
     </StackPanel>
 </Page>

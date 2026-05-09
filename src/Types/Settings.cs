@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 
-namespace PulseDL.src
+namespace PulseDL.src.Types
 {
     class Settings
     {
