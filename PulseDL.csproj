@@ -23,9 +23,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="build\**" />
+    <Compile Remove="Release\**" />
     <EmbeddedResource Remove="build\**" />
+    <EmbeddedResource Remove="Release\**" />
     <None Remove="build\**" />
+    <None Remove="Release\**" />
     <Page Remove="build\**" />
+    <Page Remove="Release\**" />
   </ItemGroup>
   <ItemGroup>
     <None Remove=".gitignore" />
@@ -95,5 +99,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PRIResource Remove="build\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Remove="Release\**" />
   </ItemGroup>
 </Project>
