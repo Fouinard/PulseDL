@@ -44,6 +44,7 @@ namespace PulseDL.src.Pages
             {
                 BrowserSelector.SelectedItem = settings.DefaultBrowser;
             }
+            RadioButtons.SelectedIndex = settings.AlwaysAskDlFolder;
         }
 
         private async void Init()
@@ -58,6 +59,15 @@ namespace PulseDL.src.Pages
                 InstallFfmpeg.Content = "Ffmpeg est déja installé";
                 InstallFfmpeg.IsEnabled = false;
             }
+        }
+
+        private void RadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int newValue = RadioButtons.SelectedIndex;
+            DownloadFolder.IsEnabled = newValue == 1;
+
+            settings.AlwaysAskDlFolder = newValue;
+            SettingsManager.Save(settings);
         }
 
         private async void DownloadFolder_Click(object sender, RoutedEventArgs e)

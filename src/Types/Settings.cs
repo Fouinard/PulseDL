@@ -11,5 +11,6 @@ namespace PulseDL.src.Types
     {
         public required string DownloadPath { get; set; }
         public string DefaultBrowser { get; set; } = "Sans navigateur";
+        public int AlwaysAskDlFolder { get; set; } = 0;
     }
 }

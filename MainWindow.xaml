@@ -13,7 +13,7 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <NavigationView ItemInvoked="NavigationView_ItemInvoked" x:Name="NavView" IsBackButtonVisible="Collapsed">
+    <NavigationView ItemInvoked="NavigationView_ItemInvoked" x:Name="NavView" IsBackButtonVisible="Collapsed" PaneTitle="PulseDL">
         <NavigationView.MenuItems>
             <NavigationViewItem Icon="Download" Content="Télécharger" Tag="DownloadVideoPage"/>
         </NavigationView.MenuItems>

@@ -21,10 +21,14 @@
         <TextBlock Style="{StaticResource BodyTextBlockStyle}">
             Dossier de téléchargement des vidéos
         </TextBlock>
+        <RadioButtons x:Name="RadioButtons" SelectionChanged="RadioButtons_SelectionChanged">
+            <RadioButton Content="Toujours demander le dossier d'installation"/>
+            <RadioButton Content="Choisir le dossier"/>
+        </RadioButtons>
         <Button Width="750"
                 x:Name="DownloadFolder"
                 Click="DownloadFolder_Click"
-                Margin="0,0,0,20">
+                Margin="0,0,0,30">
             Selectionner un dossier
         </Button>
 
@@ -34,7 +38,7 @@
                   x:Name="BrowserSelector"
                   PlaceholderText="Veuillez selectionner un navigateur par défaut"
                   Width="750"
-                  Margin="0,0,0,20">
+                  Margin="0,0,0,30">
             <x:String>Sans navigateur</x:String>
             <x:String>Brave</x:String>
             <x:String>Edge</x:String>

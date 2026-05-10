@@ -66,12 +66,12 @@ namespace PulseDL.src.Managers
         public static async Task DownloadYoutubeVideo(
             YoutubeVideoData videoData,
             string format,
+            string downloadFolder,
             Action<float> progressCallback,
             Action<string, string> milestoneCallback
         )
         {
-            Settings settings = SettingsManager.Load();
-            string path = Path.Combine(settings.DownloadPath, $"{Sanitizer.SanitizeFileName(videoData.title)} ({videoData.id}).%(ext)s");
+            string path = Path.Combine(downloadFolder, $"{Sanitizer.SanitizeFileName(videoData.title)} ({videoData.id}).%(ext)s");
             var psi = new ProcessStartInfo
             {
                 FileName = ytdlpPath,

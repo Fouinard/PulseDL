@@ -21,6 +21,8 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Devices.PointOfService;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Pickers;
+using Windows.Storage;
 using Windows.System;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -79,7 +81,7 @@ namespace PulseDL.src.Pages
 
         private void UrlInput_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(string.IsNullOrEmpty(UrlInput.Text.Trim()))
+            if (string.IsNullOrEmpty(UrlInput.Text.Trim()))
             {
                 SearchButton.IsEnabled = false;
             } else
@@ -95,7 +97,7 @@ namespace PulseDL.src.Pages
                 SearchButton_Click(null, null);
                 e.Handled = true;
             }
-                
+
         }
 
         private async void PasteButton_Click(object sender, RoutedEventArgs e)
@@ -198,7 +200,7 @@ namespace PulseDL.src.Pages
                 }
             );
             currentVideoData = video;
-            if(video.formats != null && video.formats.Count != 0)
+            if (video.formats != null && video.formats.Count != 0)
             {
                 foreach (YoutubeFormat format in video.formats)
                 {
@@ -239,12 +241,12 @@ namespace PulseDL.src.Pages
                 DownloadButton.IsEnabled = false;
                 return;
             }
-            if(selectedAudioFormat.IsEmpty && selectedVideoFormat.IsEmpty)
+            if (selectedAudioFormat.IsEmpty && selectedVideoFormat.IsEmpty)
             {
                 DownloadButton.IsEnabled = false;
                 return;
             }
-            if((selectedAudioFormat.IsEmpty && !selectedVideoFormat.IsEmpty) || (selectedVideoFormat.IsEmpty && !selectedAudioFormat.IsEmpty) || (!selectedAudioFormat.IsEmpty && !selectedVideoFormat.IsEmpty))
+            if ((selectedAudioFormat.IsEmpty && !selectedVideoFormat.IsEmpty) || (selectedVideoFormat.IsEmpty && !selectedAudioFormat.IsEmpty) || (!selectedAudioFormat.IsEmpty && !selectedVideoFormat.IsEmpty))
             {
                 DownloadButton.IsEnabled = true;
             } else
@@ -265,6 +267,27 @@ namespace PulseDL.src.Pages
 
         private async void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
+            Settings settings = SettingsManager.Load();
+            string downloadFolder = "";
+
+            if (settings.AlwaysAskDlFolder == 0)
+            {
+                FolderPicker folderPicker = new FolderPicker();
+                folderPicker.SuggestedStartLocation = PickerLocationId.Downloads;
+                folderPicker.FileTypeFilter.Add("*");
+
+                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindowInstance);
+                WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
+                StorageFolder folder = await folderPicker.PickSingleFolderAsync();
+                if (folder == null) return;
+
+                downloadFolder = folder.Path;
+            }
+            else
+            {
+                downloadFolder = settings.DownloadPath;
+            }
+            Debug.WriteLine(downloadFolder);
             currentVideoData.title = Sanitizer.SanitizeFileName(Sanitizer.RemoveEmojis(currentVideoData.title));
             VideoFormatItem selectedVideoFormat = (VideoFormatItem)VideoDropdownVideoChoice.SelectedItem;
             AudioFormatItem selectedAudioFormat = (AudioFormatItem)AudioDropdownAudioChoice.SelectedItem;
@@ -311,6 +334,7 @@ namespace PulseDL.src.Pages
             await YtdlpManager.DownloadYoutubeVideo(
                 currentVideoData,
                 stringFormat,
+                downloadFolder,
                 (progress) =>
                 {
                     this.DispatcherQueue.TryEnqueue(() =>
