@@ -40,6 +40,7 @@ namespace PulseDL
             var hwnd = WindowNative.GetWindowHandle(this);
             var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
             var appWindow = AppWindow.GetFromWindowId(windowId);
+            appWindow.SetIcon("Assets/logo_pulsedl.ico");
             appWindow.SetPresenter(AppWindowPresenterKind.Overlapped);
             appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
             if(appWindow.Presenter is OverlappedPresenter presenter)
