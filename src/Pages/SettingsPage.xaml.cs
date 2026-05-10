@@ -63,7 +63,7 @@ namespace PulseDL.src.Pages
         private async void DownloadFolder_Click(object sender, RoutedEventArgs e)
         {
             FolderPicker picker = new();
-            var hwnd = WindowNative.GetWindowHandle(App.MainWindow);
+            var hwnd = WindowNative.GetWindowHandle(App.MainWindowInstance);
             InitializeWithWindow.Initialize(picker, hwnd);
             picker.FileTypeFilter.Add("*");
             var folder = await picker.PickSingleFolderAsync();

@@ -55,14 +55,20 @@ namespace PulseDL
         {
             if (!await YtdlpManager.IsYtdlpInstalled() || !await FfmpegManager.IsFfmpegInstalled())
             {
-                NavView.SelectedItem = NavView.SettingsItem;
-                MainFrame.Navigate(typeof(SettingsPage));
+                NavigateToSettings();
             }
             else
             {
                 NavView.SelectedItem = NavView.MenuItems.First();
                 MainFrame.Navigate(typeof(DownloadVideoPage));
             }
+        }
+
+        public void NavigateToSettings()
+        {
+            NavView.SelectedItem = NavView.SettingsItem;
+            MainFrame.Navigate(typeof(SettingsPage));
+            NavView.UpdateLayout();
         }
 
         private readonly Dictionary<string, Type> pages = new()

@@ -38,21 +38,16 @@
                         Click="PasteButton_Click">
                     <FontIcon Glyph="&#xE77F;"/>
                 </Button>
-                <Grid x:Name="SearchButtonGrid">
-                    <ToolTipService.ToolTip>
-                        <ToolTip Content="Rechercher la vidéo"/>
-                    </ToolTipService.ToolTip>
-                    <Button x:Name="SearchButton"
-                            IsEnabled="False"
-                            Click="SearchButton_Click">
-                        <FontIcon Glyph="&#xE721;"/>
-                    </Button>
-                </Grid>
+                <Button x:Name="SearchButton"
+                        IsEnabled="False"
+                        Click="SearchButton_Click">
+                    <FontIcon Glyph="&#xE721;"/>
+                </Button>
                 <ProgressRing x:Name="SearchProgressRing"
-                              IsActive="False"
-                              Width="20"
-                              Height="20"
-                              VerticalAlignment="Center"/>
+                            IsActive="False"
+                            Width="20"
+                            Height="20"
+                            VerticalAlignment="Center"/>
             </StackPanel>
         </StackPanel>
         <ScrollView IsTabStop="True"
@@ -60,6 +55,7 @@
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
                     Visibility="Collapsed"
+                    Padding="0,0,20,0"
                     x:Name="VideoDetailsScrollView">
             <StackPanel Orientation="Vertical"
                         Spacing="10"

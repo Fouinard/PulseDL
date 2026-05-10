@@ -33,7 +33,7 @@ namespace PulseDL
     public partial class App : Application
     {
         private Window? _window;
-        public static Window? MainWindow {  get; private set; }
+        public static Window? MainWindowInstance { get; private set; }
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -45,17 +45,17 @@ namespace PulseDL
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
                 var ex = e.ExceptionObject as Exception;
-                System.Diagnostics.Debug.WriteLine("UNHANDLED: " + ex);
+                Debug.WriteLine("UNHANDLED: " + ex);
             };
 
             TaskScheduler.UnobservedTaskException += (s, e) =>
             {
-                System.Diagnostics.Debug.WriteLine("TASK ERROR: " + e.Exception);
+                Debug.WriteLine("TASK ERROR: " + e.Exception);
                 e.SetObserved();
             };
             AppDomain.CurrentDomain.FirstChanceException += (s, e) =>
             {
-                System.Diagnostics.Debug.WriteLine("FIRST CHANCE: " + e.Exception);
+                Debug.WriteLine("FIRST CHANCE: " + e.Exception);
             };
         }
 
@@ -65,9 +65,9 @@ namespace PulseDL
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            MainWindow = new MainWindow();
-            MainWindow.Activate();
-            _window = MainWindow;
+            MainWindowInstance = new MainWindow();
+            MainWindowInstance.Activate();
+            _window = MainWindowInstance;
         }
     }
 }

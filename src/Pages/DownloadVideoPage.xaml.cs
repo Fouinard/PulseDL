@@ -37,26 +37,8 @@ namespace PulseDL.src.Pages
         {
             InitializeComponent();
             CheckForUpdates();
-            Init();
         }
-
-        private bool DisableSearchButton = false;
-
-        private async void Init()
-        {
-            if (!(await FfmpegManager.IsFfmpegInstalled()) || !(await YtdlpManager.IsYtdlpInstalled()))
-            {
-                DisableSearchButton = true;
-                SearchButton.IsEnabled = false;
-                ToolTip tooltip = new()
-                {
-                    Content = "Impossible de lancer la recherche car Yt-dlp ou Ffmpeg n'est pas installé. Vérifiez la page des paramètres."
-                };
-                ToolTipService.SetToolTip(SearchButtonGrid, tooltip);
-                Debug.WriteLine("testgds");
-                return;
-            }
-        }
+        
 
         private async Task CheckForUpdates()
         {
@@ -93,7 +75,7 @@ namespace PulseDL.src.Pages
             }
         }
 
-        private YoutubeVideoData currentVideoData = new YoutubeVideoData();
+        private YoutubeVideoData currentVideoData = new();
 
         private void UrlInput_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -103,10 +85,6 @@ namespace PulseDL.src.Pages
             } else
             {
                 SearchButton.IsEnabled = true;
-            }
-            if(DisableSearchButton)
-            {
-                SearchButton.IsEnabled = false;
             }
         }
 
@@ -130,8 +108,65 @@ namespace PulseDL.src.Pages
             }
         }
 
+        private readonly Dictionary<string, string> BrowserName = new()
+        {
+            { "brave", "brave" },
+            { "edge", "msedge" },
+            { "firefox", "firefox" },
+            { "opera", "opera" },
+            { "vivaldi", "vivaldi" },
+            { "whale", "whale" }
+        };
+
+        private async Task<bool> CheckRunningBrowser()
+        {
+            Settings settings = SettingsManager.Load();
+            if (settings.DefaultBrowser.ToLower() == "sans navigateur") return false;
+            Process[] Browser = Process.GetProcessesByName(BrowserName[settings.DefaultBrowser.ToLower()]);
+            if(Browser.Length > 0)
+            {
+                bool ValueToReturn = false;
+                await SimplePopup.ShowPopup(
+                    this,
+                    PopupTypes.Error,
+                    "Votre navigateur est actuellement lancé. Voulez-vous l'arreter ?",
+                    primaryButtonText: "Arrêter",
+                    secondaryButtonText: "Annuler",
+                    primaryButtonClick: (d, e) =>
+                    {
+                        foreach (var browser in Browser) {
+                            browser.Kill();
+                        }
+                        d.Hide();
+                    },
+                    secondaryButtonClick: (d, e) =>
+                    {
+                        d.Hide();
+                        ValueToReturn = true;
+                    }
+                );
+                return ValueToReturn;
+            }
+            return false;
+        }
+
         private async void SearchButton_Click(object sender, RoutedEventArgs e)
         {
+            if(!(await FfmpegManager.IsFfmpegInstalled()) || !(await YtdlpManager.IsYtdlpInstalled()))
+            {
+                await SimplePopup.ShowPopup(
+                    this,
+                    PopupTypes.Error,
+                    "Yt-dlp ou Ffmpeg n'est pas installé. Vérifiez la page des paramètres afin de les installer.",
+                    primaryButtonClick: (d, a) =>
+                    {
+                        d.Hide();
+                    }
+                );
+                return;
+            }
+            bool Canceled = await CheckRunningBrowser();
+            if (Canceled) return;
             string url = UrlInput.Text;
             SearchButton.IsEnabled = false;
             SearchProgressRing.IsActive = true;
@@ -192,7 +227,6 @@ namespace PulseDL.src.Pages
             }
             AudioDropdownAudioChoice.ItemsSource = audioFormats;
             VideoDropdownVideoChoice.ItemsSource = videoFormats;
-
             VideoDetailsScrollView.Visibility = Visibility.Visible;
         }
 
