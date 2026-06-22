@@ -23,7 +23,7 @@ namespace PulseDL.src.Managers
             "yt-dlp.exe"
         );
 
-        public static async Task<YoutubeVideoData> GetVideoData(string url)
+        public static async Task<YoutubeVideoData> GetVideoData(string url, Action<string> onError)
         {
             var settings = SettingsManager.Load();
             string browser = settings.DefaultBrowser.ToLower();
@@ -50,6 +50,11 @@ namespace PulseDL.src.Managers
             string output = (await process.StandardOutput.ReadToEndAsync()).Trim();
             string error = await process.StandardError.ReadToEndAsync();
             process.WaitForExit();
+            if(!string.IsNullOrEmpty(error))
+            {
+                onError(error);
+                return new YoutubeVideoData();
+            }
             Debug.WriteLine(error);
             YoutubeVideoData video = JsonSerializer.Deserialize<YoutubeVideoData>(output)!;
             List<YoutubeFormat> filteredFormats = [];

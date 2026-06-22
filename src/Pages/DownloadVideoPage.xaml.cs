@@ -172,7 +172,13 @@ namespace PulseDL.src.Pages
             string url = UrlInput.Text;
             SearchButton.IsEnabled = false;
             SearchProgressRing.IsActive = true;
-            YoutubeVideoData video = await YtdlpManager.GetVideoData(url);
+            YoutubeVideoData video = await YtdlpManager.GetVideoData(url, async (errorMessage) =>
+            {
+                await SimplePopup.ShowPopup(
+                    this, PopupTypes.Error,
+                    errorMessage
+                );
+            });
             SearchButton.IsEnabled = true;
             SearchProgressRing.IsActive = false;
             VideoTitle.Text = video.title;

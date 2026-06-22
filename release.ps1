@@ -40,10 +40,10 @@ Remove-Item -Path "Release" -Recurse -Force -ErrorAction Ignore
 
 $originalLocation = Get-Location
 
-$versionGroup.Version = $version
+$versionGroup.Version = "$version"
 $versionGroup.AssemblyVersion = "$version.0"
 $versionGroup.FileVersion = "$version.0"
-$versionGroup.InformationalVersion = $version
+$versionGroup.InformationalVersion = "$version"
 $csproj.Save("PulseDL.csproj")
 
 dotnet.exe publish -c Release -r win-x64 -p:Platform=x64 -o ./Release/Unpackaged

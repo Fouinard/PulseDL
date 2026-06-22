@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "PulseDL"
-#define MyAppVersion "1.0.4"
+#define MyAppVersion "1.0.5"
 #define MyAppPublisher "Fouinard"
 #define MyAppURL "https://pulsedl.fouinard.fr"
 #define MyAppExeName "PulseDL.exe"
@@ -57,6 +57,7 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall
+
 
 
 
