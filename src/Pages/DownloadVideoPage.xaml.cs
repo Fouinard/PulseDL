@@ -41,7 +41,6 @@ namespace PulseDL.src.Pages
             CheckForUpdates();
         }
         
-
         private async Task CheckForUpdates()
         {
             LatestVersionInfo latestVersion = await UpdateManager.GetLatestVersionInfo();

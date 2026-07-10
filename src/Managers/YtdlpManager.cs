@@ -40,7 +40,7 @@ namespace PulseDL.src.Managers
             var psi = new ProcessStartInfo
             {
                 FileName = ytdlpPath,
-                Arguments = $"--js-runtimes node --no-playlist {browser} -J --ffmpeg-location {FfmpegManager.ffmpegPath} --skip-download \"{url}\"",
+                Arguments = $"--js-runtimes node --update --no-playlist {browser} -J --ffmpeg-location {FfmpegManager.ffmpegPath} --skip-download \"{url}\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
@@ -80,7 +80,7 @@ namespace PulseDL.src.Managers
             var psi = new ProcessStartInfo
             {
                 FileName = ytdlpPath,
-                Arguments = $"--js-runtimes node -f \"{format}\" --newline -o \"{path}\" \"https://youtu.be/{videoData.id}\"",
+                Arguments = $"--js-runtimes node --update -f \"{format}\" --newline -o \"{path}\" \"https://youtu.be/{videoData.id}\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
